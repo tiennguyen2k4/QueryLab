@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   Server,
   BarChart3,
@@ -57,6 +57,24 @@ export function Interview() {
   const [openQuestions, setOpenQuestions] = useState<Record<string, boolean>>({});
   const [scratchpads, setScratchpads] = useState<Record<string, string>>({});
   const [masteredMap, setMasteredMap] = useState<Record<string, boolean>>({});
+
+  useEffect(() => {
+    if (typeof window === 'undefined') return;
+    const params = new URLSearchParams(window.location.search);
+    const r = params.get('role');
+    const lvl = params.get('level');
+    if (r) {
+      if (r === 'be' || r === 'backend') setSelectedRole('backend');
+      else if (r === 'da' || r === 'data-analyst') setSelectedRole('data-analyst');
+      else if (r === 'de' || r === 'data-engineer') setSelectedRole('data-engineer');
+      else if (r === 'dba') setSelectedRole('dba');
+    }
+    if (lvl) {
+      if (lvl === 'junior') setSelectedLevel('junior');
+      else if (lvl === 'mid' || lvl === 'middle') setSelectedLevel('middle');
+      else if (lvl === 'senior') setSelectedLevel('senior');
+    }
+  }, []);
 
   // Filtered questions for active role
   const filteredQuestions = useMemo(() => {

@@ -308,17 +308,287 @@ html[data-theme="dark"]{
 .scenario-card-tags{display:flex;flex-wrap:wrap;gap:6px;padding-top:14px;margin-top:8px;border-top:1px solid var(--border)}
 .topic-tag{font-size:10.5px;padding:2px 8px;border-radius:4px;background:var(--surface2);color:var(--muted);border:1px solid var(--border);font-family:'JetBrains Mono',monospace}
 
-/* Landing Interview Banner (kept for landing page) */
-.landing-interview-banner{margin:0 45px 50px;border:1px solid var(--border);border-radius:10px;background:var(--surface);padding:40px;position:relative;overflow:hidden}
-.landing-interview-banner:before{content:"";position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--mint),transparent)}
-.landing-interview-inner h2{font-size:28px;margin:12px 0 10px;font-weight:600}
-.landing-interview-inner p{font-size:14px;color:var(--muted);max-width:640px;line-height:1.7}
-.landing-role-chips{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
-.role-chip{font-size:11px;padding:4px 10px;border-radius:15px;background:var(--surface2);border:1px solid var(--border);color:var(--text)}
+/* ==========================================================================
+   Landing Interview Section (Practice SQL interviews by Role & Level)
+   ========================================================================== */
+.landing-interview-section {
+  max-width: 1320px;
+  margin: 0 auto 80px;
+  padding: 0 50px;
+  opacity: 0;
+  transform: translateY(28px);
+  transition: opacity .85s cubic-bezier(0.16, 1, 0.3, 1),
+              transform .85s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: opacity, transform;
+}
+.landing-interview-section.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.landing-interview-card {
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  background: var(--surface2);
+  padding: 44px 44px 34px;
+  position: relative;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+}
 
-@media(max-width:1050px){
-  .giant-roles-grid{grid-template-columns:1fr}
-  .rubric-grid{grid-template-columns:1fr}
+/* Header */
+.interview-section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 24px;
+  margin-bottom: 34px;
+  flex-wrap: wrap;
+}
+.interview-header-left {
+  max-width: 640px;
+}
+.interview-eyebrow {
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: .12em;
+  color: var(--mint);
+  margin-bottom: 12px;
+  text-transform: uppercase;
+}
+.interview-main-title {
+  font-size: clamp(28px, 3.4vw, 42px);
+  font-weight: 700;
+  line-height: 1.15;
+  letter-spacing: -.03em;
+  margin: 0 0 14px;
+  color: var(--text);
+}
+.interview-lead-text {
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--muted);
+  margin: 0;
+}
+
+/* Level Switcher (Junior -> Mid -> Senior) */
+.interview-level-switcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--surface);
+  padding: 5px 8px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.level-pill-btn {
+  padding: 7px 15px;
+  font-size: 12.5px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  background: var(--surface2);
+  color: var(--muted);
+  cursor: pointer;
+  transition: all .28s cubic-bezier(0.16, 1, 0.3, 1);
+  white-space: nowrap;
+}
+.level-pill-btn:hover {
+  color: var(--text);
+  background: var(--surface3);
+}
+.level-pill-btn.active {
+  background: var(--mint);
+  color: var(--button-text);
+  font-weight: 700;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  transform: scale(1.02);
+}
+html[data-theme="light"] .level-pill-btn.active {
+  background: #1e5a3c;
+  color: #ffffff;
+}
+.level-arrow {
+  color: var(--subtle);
+  font-size: 13px;
+  user-select: none;
+}
+
+/* 4 Role Cards Grid */
+.interview-roles-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 18px;
+  margin-bottom: 26px;
+}
+.landing-role-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 26px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 204px;
+  text-decoration: none;
+  color: inherit;
+  position: relative;
+  opacity: 0;
+  transform: translateY(20px);
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1),
+              border-color 0.28s ease,
+              box-shadow 0.28s ease,
+              background-color 0.28s ease;
+  will-change: transform, border-color, box-shadow;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+/* Staggered entrance animation only when section becomes visible */
+.landing-interview-section.is-visible .landing-role-card {
+  animation: roleCardEntrance 0.65s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+.landing-interview-section.is-visible .landing-role-card:nth-child(1) { animation-delay: 0.08s; }
+.landing-interview-section.is-visible .landing-role-card:nth-child(2) { animation-delay: 0.18s; }
+.landing-interview-section.is-visible .landing-role-card:nth-child(3) { animation-delay: 0.28s; }
+.landing-interview-section.is-visible .landing-role-card:nth-child(4) { animation-delay: 0.38s; }
+
+@keyframes roleCardEntrance {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Smooth, instant hover with zero delay and no competing text transforms */
+.landing-role-card:hover {
+  transform: translateY(-5px);
+  border-color: var(--mint);
+  box-shadow: 0 12px 28px rgba(0, 0, 0, 0.08), 0 0 0 1px var(--mint);
+}
+.role-card-top {
+  margin-bottom: 16px;
+}
+.role-code {
+  font-size: 26px;
+  font-weight: 750;
+  color: var(--mint);
+  letter-spacing: -.02em;
+  margin-bottom: 12px;
+  display: inline-block;
+  transition: opacity 0.28s ease;
+}
+html[data-theme="light"] .role-code {
+  color: #1e5a3c;
+}
+.landing-role-card:hover .role-code {
+  opacity: 0.9;
+}
+.role-name {
+  font-size: 18px;
+  font-weight: 650;
+  line-height: 1.3;
+  margin: 0 0 10px;
+  color: var(--text);
+  letter-spacing: -.02em;
+}
+.role-desc {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--muted);
+  margin: 0;
+}
+.role-card-bottom {
+  margin-top: auto;
+  padding-top: 18px;
+}
+.role-start-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13.5px;
+  font-weight: 650;
+  color: var(--mint);
+  transition: gap .28s ease;
+}
+html[data-theme="light"] .role-start-link {
+  color: #1e5a3c;
+}
+.role-start-arrow {
+  transition: transform 0.28s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.landing-role-card:hover .role-start-arrow {
+  transform: translateX(4px);
+}
+
+/* Perks Row */
+.interview-perks-row {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  font-size: 12.5px;
+  color: var(--subtle);
+  font-weight: 500;
+  flex-wrap: wrap;
+  padding-top: 6px;
+}
+.perk-dot {
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: var(--subtle);
+  opacity: .5;
+  display: inline-block;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .landing-interview-section,
+  .landing-interview-section .landing-role-card {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+    animation: none !important;
+  }
+}
+
+/* Responsive */
+@media (max-width: 1050px) {
+  .landing-interview-section {
+    padding: 0 35px;
+  }
+  .interview-roles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  .giant-roles-grid {
+    grid-template-columns: 1fr;
+  }
+  .rubric-grid {
+    grid-template-columns: 1fr;
+  }
+}
+@media (max-width: 768px) {
+  .landing-interview-section {
+    padding: 0 25px;
+    margin-bottom: 50px;
+  }
+  .landing-interview-card {
+    padding: 30px 22px 24px;
+  }
+  .interview-section-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .interview-roles-grid {
+    grid-template-columns: 1fr;
+    gap: 14px;
+  }
 }
 @media(max-width:680px){
   .interview-room-nav{flex-direction:column;align-items:stretch;gap:14px}
@@ -326,8 +596,6 @@ html[data-theme="dark"]{
   .room-filter-row{flex-direction:column;align-items:flex-start}
   .room-filter-row label{width:auto}
   .interview-sandbox-callout{flex-direction:column;align-items:flex-start}
-  .landing-interview-banner{margin:0 25px 40px;padding:25px}
-  .landing-interview-inner h2{font-size:22px}
 }
 
 /* Landing Editorial Hero & Experiment Steps (New Template) */
