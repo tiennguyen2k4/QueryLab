@@ -1,0 +1,20 @@
+# Dedicated local lab database; credentials below are for this loopback-only development fixture.
+services:
+  postgres:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_USER: datalab_admin
+      POSTGRES_PASSWORD: datalab_bootstrap_local_only
+      POSTGRES_DB: postgres
+    ports:
+      - '127.0.0.1:55432:5432'
+    volumes:
+      - lab-data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/10-lab.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U datalab_admin -d postgres']
+      interval: 2s
+      timeout: 3s
+      retries: 30
+volumes:
+  lab-data:
